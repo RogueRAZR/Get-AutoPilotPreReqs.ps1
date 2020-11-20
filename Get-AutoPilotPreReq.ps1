@@ -1,6 +1,6 @@
 <#PSScriptInfo
  
-.VERSION 1.2
+.VERSION 1.3
  
 .GUID ce0e652d-1d75-4da9-987e-ba1280016979
  
@@ -28,6 +28,7 @@
 Version 1.0: Original published version.
 Version 1.1: Added the Ability to self Elevate Permissions
 Version 1.2: Changed Variables and introduced self installer for the Get-WindowsAutoPilotInfo.ps1 script.
+Version 1.3: Added a check that the csv file was properly made.
 #>
 
 <#
@@ -161,6 +162,14 @@ Install-Script -Name Get-WindowsAutoPilotInfo -RequiredVersion "3.5"
 $ScriptDir = Get-InstalledScript -Name Get-WindowsAutoPilotInfo
 $Script = $ScriptDir.InstalledLocation + '\Get-WindowsAutoPilotInfo.ps1'
 PowerShell -NoProfile -ExecutionPolicy Bypass -File $Script -ComputerName $env:COMPUTERNAME -OutputFile $OutputFile -append
-Write-Output "computers.csv file has been created in " $OutputFile ". Please send this file to your IT department. Script complete."
+If (Test-Path -Path $OutputFile -IsValid)
+{
+    Write-Output "computers.csv file has been created in " $OutputFile ". Please send this file to your IT department. Script complete."
+}
+Else
+{
+    Write-Output "An error occured and the CSV file was not generated. Make sure you have adequate permissions, and that the OutputFile path is valid."
+    Exit 1
+}
 Pause
 Exit
