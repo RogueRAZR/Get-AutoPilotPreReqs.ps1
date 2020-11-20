@@ -134,7 +134,7 @@ Get-Permissions
 Test-Tpm
 #Check the network connection profile, set it to private.
 $adapter = Get-NetConnectionProfile 
-If ($adapter.NetworkCategory = "Public")
+If ($adapter.NetworkCategory -eq "Public")
 {
     $adapter.NetworkCategory = "Private"
 }
