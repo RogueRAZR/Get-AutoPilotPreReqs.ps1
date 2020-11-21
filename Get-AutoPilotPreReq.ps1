@@ -114,6 +114,7 @@ function Test-Tpm
 #Check the length of the computername, names longer than 10 chars will cause issues. This will self correct the problem.
 If ($env:COMPUTERNAME.Length -gt 10)
 {
+    #Check if the post restart task has already been perfomed and remove it (prevents infinite loop)
     If (Get-ScheduledTask -TaskName "RenameReboot")
     {
         Unregister-ScheduledTask -TaskName "RenameReboot"
@@ -121,6 +122,7 @@ If ($env:COMPUTERNAME.Length -gt 10)
         Pause
         Exit 1
     }
+    #Create Scheduled task to restart the script automatically on next start after fixing the Computer Name to be less than 10 chars.
     Else
     {
         $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-NoProfile -Command $ThisScript'
