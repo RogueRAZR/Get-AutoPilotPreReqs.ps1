@@ -1,6 +1,6 @@
 <#PSScriptInfo
  
-.VERSION 1.3
+.VERSION 1.4
  
 .GUID ce0e652d-1d75-4da9-987e-ba1280016979
  
@@ -29,6 +29,7 @@ Version 1.0: Original published version.
 Version 1.1: Added the Ability to self Elevate Permissions
 Version 1.2: Changed Variables and introduced self installer for the Get-WindowsAutoPilotInfo.ps1 script.
 Version 1.3: Added a check that the csv file was properly made.
+Version 1.4: Added switch for whiteglove. With white glove enabled, this will check the TPM, without the switch assumes user guided which doesnt require TPM. Good if your are setting up on a VM
 #>
 
 <#
@@ -53,11 +54,14 @@ Copy this script into same directory as your Get-AutoPilotInfo.ps1 script. When 
 
 .PARAMETER OutputFile
 Optional string which allows you to specify the path where the CSV file ends up as well as its name. Good if you can save to a flashdrive. The default location is the current users desktop.
+.PARAMETER WhiteGlove
+Optional string which turns on and off TPM checking. This is to toggle checking TPM on and off. Setting up autopilot on VM is currently not possible as the VM cant pass the TPM checks. This allows you to turn TPM check on or off.
 #>
 
 param
 (
     [Parameter(Mandatory=$False)] [string] $OutputFile = $env:USERPROFILE + "\Desktop\computers.csv" 
+    [Parameter(Mandatory=$False)] [switch] $WhiteGlove = $False
 )
 $ThisScript = $PSScriptRoot + '\Get-AutoPilotPreReq.ps1'
 #Check Permissions and Self Elevate
@@ -133,8 +137,11 @@ If ($env:COMPUTERNAME.Length -gt 10)
 }
 #Check permissions and elevate if needed
 Get-Permissions
-#Check the TPM Module
-Test-Tpm
+#Check the TPM Module if WhiteGlove is specified
+If ($WhiteGlove -eq $True)
+{
+    Test-Tpm
+}
 #Check the network connection profile, set it to private.
 $adapter = Get-NetConnectionProfile 
 If ($adapter.NetworkCategory -eq "Public")
