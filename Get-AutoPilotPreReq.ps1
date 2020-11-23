@@ -60,7 +60,7 @@ Optional string which turns on and off TPM checking. This is to toggle checking 
 
 param
 (
-    [Parameter(Mandatory=$False)] [string] $OutputFile = $env:USERPROFILE + "\Desktop\computers.csv" 
+    [Parameter(Mandatory=$False)] [string] $OutputFile = $env:USERPROFILE + "\Desktop\computers.csv",
     [Parameter(Mandatory=$False)] [switch] $WhiteGlove = $False
 )
 $ThisScript = $PSScriptRoot + '\Get-AutoPilotPreReq.ps1'
